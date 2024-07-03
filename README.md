@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 ```
-1. Add **ScanDocCameraView** view to capture frames and forward them to SDK for processing.
+2. Add **ScanDocCameraView** view to capture frames and forward them to SDK for processing.
 ```swift
 import SwiftUI
 import ScanDocSDK
@@ -36,7 +36,7 @@ struct ContentView: View {
 }
 ```
 
-1. Retrieve SDK output events by subscribing to **outputEvent**  publisher.
+3. Retrieve SDK output events by subscribing to **outputEvent**  publisher.
 ```swift
 import SwiftUI
 import ScanDocSDK
