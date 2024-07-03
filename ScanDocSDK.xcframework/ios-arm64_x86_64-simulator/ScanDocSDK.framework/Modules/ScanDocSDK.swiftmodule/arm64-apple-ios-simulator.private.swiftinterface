@@ -1,0 +1,87 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-module-flags: -target arm64-apple-ios16.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name ScanDocSDK
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import AVFoundation
+import Combine
+import Foundation
+import Swift
+import SwiftUI
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+@_hasMissingDesignatedInitializers final public class ScanDocAPI {
+  @objc deinit
+}
+extension ScanDocSDK.ScanDocAPI {
+  public static func initialize(userKey: Swift.String, acceptTermsAndConditions: Swift.Bool)
+  public static var outputEvent: Combine.AnyPublisher<ScanDocSDK.ScanDocEvent, Swift.Never> {
+    get
+  }
+}
+public struct ScanDocCameraView : SwiftUI.UIViewControllerRepresentable {
+  public init()
+  @_Concurrency.MainActor(unsafe) public func makeUIViewController(context: ScanDocSDK.ScanDocCameraView.Context) -> UIKit.UIViewController
+  @_Concurrency.MainActor(unsafe) public func updateUIViewController(_ uiViewController: UIKit.UIViewController, context: ScanDocSDK.ScanDocCameraView.Context)
+  @_Concurrency.MainActor(unsafe) public static func dismantleUIViewController(_ uiViewController: UIKit.UIViewController, coordinator: ())
+  public typealias Body = Swift.Never
+  public typealias Coordinator = ()
+  public typealias UIViewControllerType = UIKit.UIViewController
+}
+public enum ScanDocEvent {
+  case validationInProgress(infoCode: Swift.String)
+  case extractionInProgress
+  case extracted(documentImages: [UIKit.UIImage]?, faceImage: UIKit.UIImage?, signatureImage: UIKit.UIImage?, fields: [ScanDocSDK.ExtractedFieldType : Swift.String?])
+  case networkError(ScanDocSDK.ScanDocEventError)
+}
+public enum ScanDocEventError : Swift.String, Swift.Error {
+  case badServerResponse
+  case unableToAuthenticate
+  case cannotParseResponse
+  case badUrl
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum ExtractedFieldType : Swift.String {
+  case name
+  case surname
+  case birthDate
+  case gender
+  case placeOfBirth
+  case nationality
+  case documentNumber
+  case issuedDate
+  case expiryDate
+  case countryOfIssue
+  case issuingAuthority
+  case addressCountry
+  case addressZip
+  case addressCity
+  case addressCounty
+  case addressStreet
+  case personalIdentificationNumber
+  case givenName
+  case familyName
+  case mothersGivenName
+  case mothersFamilyName
+  case secondLastName
+  case address
+  case placeOfIssue
+  case fathersGivenName
+  case fathersFamilyName
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension ScanDocSDK.ScanDocEventError : Swift.Equatable {}
+extension ScanDocSDK.ScanDocEventError : Swift.Hashable {}
+extension ScanDocSDK.ScanDocEventError : Swift.RawRepresentable {}
+extension ScanDocSDK.ExtractedFieldType : Swift.Equatable {}
+extension ScanDocSDK.ExtractedFieldType : Swift.Hashable {}
+extension ScanDocSDK.ExtractedFieldType : Swift.RawRepresentable {}
