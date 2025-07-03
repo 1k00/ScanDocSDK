@@ -1,13 +1,6 @@
-//
-//  scandoc_testUITestsLaunchTests.swift
-//  scandoc-testUITests
-//
-//  Created by Zvone on 6/12/25.
-//
-
 import XCTest
 
-final class scandoc_testUITestsLaunchTests: XCTestCase {
+final class ScanDocSDKLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

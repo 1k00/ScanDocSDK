@@ -1,17 +1,11 @@
-//
-//  ContentView.swift
-//  scandoc-test
-//
-//  Created by Zvone on 6/12/25.
-//
-
 import SwiftUI
-import ScanDocSDK
 import CoreNFC
 import NFCPassportReader
 
 struct PassportDetailView: View {
     let passport: NFCPassportModel
+    let onRetryNFC: () -> Void
+    let onStartOver: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
@@ -27,12 +21,26 @@ struct PassportDetailView: View {
                 .font(.headline)
             Text("Name: \(passport.firstName) \(passport.lastName)")
             Text("Document Number: \(passport.documentNumber)")
+            Button("Retry NFC Scan") {
+                onRetryNFC()
+            }
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+            Button("Start Over") {
+                onStartOver()
+            }
+            .padding()
+            .background(Color.gray)
+            .foregroundColor(.white)
+            .cornerRadius(8)
         }
         .padding()
     }
 }
 
-struct PassportScannerView: View {
+public struct PassportScannerView: View {
     @State private var isLoading = true
     @State private var result: NFCPassportModel?
     @State private var error: Error?
@@ -57,11 +65,16 @@ struct PassportScannerView: View {
 
             do {
                 let passportReader = PassportReader()
+                // Set the masterListURL on the Passport Reader to allow auto passport verification
+                let masterListURL = Bundle.main.url(forResource: "masterList", withExtension: ".pem")!
+                passportReader.setMasterListURL( masterListURL )
+                
+                // Set whether to use the new Passive Authentication verification method (default true) or the old OpenSSL CMS verifiction
+                passportReader.passiveAuthenticationUsesOpenSSL = true
+                print("Mrz key used for scanning: \(mrzKey)")
                 let passport = try await passportReader.readPassport(
                     mrzKey: mrzKey,
-                    skipCA: true,
-                    skipPACE: true,
-                    useExtendedMode: true,
+                    useExtendedMode: false,
                     customDisplayMessage: customMessageHandler
                 )
 
@@ -105,7 +118,7 @@ struct PassportScannerView: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             if isLoading {
                 ProgressView("Scanning passport...")
@@ -113,7 +126,7 @@ struct PassportScannerView: View {
                         startScan()
                     }
             } else if let passport = passport {
-                PassportDetailView(passport: passport)
+                PassportDetailView(passport: passport, onRetryNFC: retryScan, onStartOver: onStartOver)
             } else if let error = error {
                 Text("Error: \(error.localizedDescription)")
                     .foregroundColor(.red)
@@ -138,7 +151,6 @@ struct PassportScannerView: View {
 }
 
 struct ContentView: View {
-    
     @State private var eventText: String?
     @State private var documentImages: [UIImage]?
     @State private var faceImage: UIImage?
@@ -244,15 +256,15 @@ struct ContentView: View {
                     self.showCameraView = false
                     
                     if let documentNumber = fields.first(where: { $0.key == .documentNumber })?.value,
-                       let dateOfBirth = fields.first(where: { $0.key == .birthDate })?.value,
-                       let expiryDate = fields.first(where: { $0.key == .expiryDate })?.value {
+                       let dateOfBirth: String? = convertToYYMMDD(from: fields.first(where: { $0.key == .birthDate })?.value),
+                       let expiryDate: String? = convertToYYMMDD(from: fields.first(where: { $0.key == .expiryDate })?.value)  {
                         let passportUtils = PassportUtils()
-                        self.mrzKey = passportUtils.getMRZKey(passportNumber: documentNumber, dateOfBirth: dateOfBirth, dateOfExpiry: expiryDate)
+                        self.mrzKey = passportUtils.getMRZKey(passportNumber: documentNumber, dateOfBirth: dateOfBirth ?? "", dateOfExpiry: expiryDate ?? "")
                         
                         print("MRZ Key: \(self.mrzKey ?? "N/A")")
                         print("Document Number: \(documentNumber)")
-                        print("Date of Birth: \(dateOfBirth)")
-                        print("Expiry Date: \(expiryDate)")
+                        print("Date of Birth: \(String(describing: dateOfBirth))")
+                        print("Expiry Date: \(String(describing: expiryDate))")
                     }
                 }
             }

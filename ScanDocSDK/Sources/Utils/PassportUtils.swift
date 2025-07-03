@@ -1,11 +1,3 @@
-//
-//  PassportUtils.swift
-//  NFCPassportReaderApp
-//
-//  Created by Andy Qua on 30/06/2019.
-//  Copyright © 2019 Andy Qua. All rights reserved.
-//
-
 import UIKit
 import NFCPassportReader
 import OSLog
